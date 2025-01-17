@@ -6,7 +6,6 @@ import base64
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-
 import simulator   # This is your 'simulator.py'
 import queueing_code
 import sys
