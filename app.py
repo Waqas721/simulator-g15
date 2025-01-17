@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import simulator   # This is your 'simulator.py'
 import queueing_code
 import sys
+import os
 
 app = Flask(__name__)
 
@@ -213,5 +214,7 @@ def fig_to_base64(fig):
 def run_queueing(form):
     return queueing_code.run_queueing_model(form)
 
-if __name__=='__main__':
-    app.run(debug=False, host='0.0.0.0', port=5000)
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))  # Use Heroku's $PORT
+    app.run(debug=False, host='0.0.0.0', port=port)
+
