@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Simulator or Queueing Model</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: white;
+        margin: 0;
+        padding: 0;
+        color: #14c61a;
+        font-weight: bold;
+      }
+
+      .header {
+        color: white;
+        margin-right: 42%;
+      }
+
+      .nav-item {
+        margin-left: 1rem;
+      }
+      .nav-item:hover {
+        background-color: #3590F3;
+        border-radius: 0.5rem;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 50px auto;
+        background: #2c3a20;
+        padding: 25px;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+        border: 1px solid #000000;
+      }
+
+      h1 {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #ffffff;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #f9fafb;
+        margin-bottom: 15px;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      label {
+        font-weight: 600;
+        font-size: 1rem;
+        margin-bottom: 5px;
+      }
+
+      select,
+      input {
+        width: 100%;
+        padding: 10px;
+        font-size: 1rem;
+        border: 2px solid #000000;
+        border-radius: 6px;
+        transition: border-color 0.2s ease-in-out;
+      }
+
+      select:focus,
+      input:focus {
+        border-color: #f9fcff;
+        outline: none;
+      }
+
+      fieldset {
+        border: 1px solid #28dc14;
+        border-radius: 8px;
+        padding: 26px;
+        background: #1b1c1b;
+        margin-bottom: 20px;
+      }
+
+      legend {
+        font-weight: bold;
+        padding: 0 8px;
+        color: #ffffff;
+      }
+
+      button {
+        background: #119d04;
+        color: #fff;
+        padding: 12px 20px;
+        font-size: 1rem;
+        font-weight: bold;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background 0.3s ease-in-out;
+        align-self: center;
+      }
+
+      button:hover {
+        background: #071e02;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .loader-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      /* loader */
+      .loader {
+        width: 45px;
+        height: 45px;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #085a0c;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        display: none;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      #resultsContainer,
+      #ganttContainer,
+      #barChartsContainer,
+      #queueingContainer {
+        margin-top: 30px;
+        padding: 20px;
+        background: #1b1b1b;
+        border: 1px solid #0ecc2e;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+      }
+
+      pre {
+        background: #020202;
+        padding: 15px;
+        border-radius: 6px;
+        border: 3px solid #1ed61b;
+        max-height: 400px;
+        overflow-y: auto;
+        font-size: 0.9rem;
+        color: white;
+      }
+
+      #ganttImagesWrapper img,
+      #barChartsImage {
+        max-width: 100%;
+        height: auto;
+        border-radius: 6px;
+        margin-top: 15px;
+      }
+
+      .group-members {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .seat-no {
+        color: #a7f297;
+        font-weight: lighter;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 15px;
+        }
+        h1 {
+          font-size: 1.8rem;
+        }
+        h2 {
+          font-size: 1.3rem;
+        }
+        button {
+          font-size: 0.9rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+     <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <!-- Brand / Logo -->
+      <a class="navbar-brand fw-bold" href="/">
+        <span class="fs-4">Queue Master</span>
+      </a>
+
+      <!-- Toggler for mobile -->
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Collapsible content -->
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <!-- Navbar links aligned to the right on large screens -->
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" href="/">
+              Home
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/simulator">
+              SimApp
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/about">
+              About Us
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+    <div class="container">
+      <h1>Banking Simulation and Queueing Program</h1>
+
+      <form id="mainForm">
+        <label>Operation Mode:</label>
+        <select name="mode" id="modeSelect">
+          <option value="simulate">Simulation</option>
+          <option value="queueing">Queueing Model</option>
+        </select>
+
+        <!-- SIMULATION PARAMETERS -->
+        <fieldset id="simulateParams">
+          <legend>Simulation</legend>
+
+          <!-- ARRIVAL -->
+          <fieldset>
+            <legend>Arrival Distribution</legend>
+            <label>Distribution:</label>
+            <select name="arrival_type" id="arrival_type">
+              <option value="poisson">Poisson</option>
+              <option value="normal">Normal</option>
+              <option value="uniform">Uniform</option>
+              <option value="exponential">Exponential</option>
+            </select>
+
+            <!-- Poisson => λ -->
+            <div id="arrivalPoissonParams" class="hidden">
+              <label>Arrival Rate (λ):</label>
+              <input
+                type="number"
+                step="0.01"
+                min="0.01"
+                name="arrival_lambda"
+                value="1.0"
+              />
+            </div>
+
+            <!-- Normal => μ,σ -->
+            <div id="arrivalNormalParams" class="hidden">
+              <label>Arrival Mean (μ):</label>
+              <input
+                type="number"
+                step="0.01"
+                min="0.01"
+                name="arrival_mu"
+                value="5.0"
+              />
+              <label>Arrival Std Dev (σ):</label>
+              <input
+                type="number"
+                step="0.01"
+                min="0.01"
+                name="arrival_sigma"
+                value="2.0"
+              />
+            </div>
+
+            <!-- Uniform => a,b -->
+            <div id="arrivalUniformParams" class="hidden">
+              <label>Arrival Lower Bound (a):</label>
+              <input
+                type="number"
+                step="0.01"
+                min="0.01"
+                name="arrival_a"
+                value="1.0"
+              />
+              <label>Arrival Upper Bound (b):</label>
+              <input
+                type="number"
+                step="0.01"
+                min="0.01"
+                name="arrival_b"
+                value="5.0"
+              />
+            </div>
+
+            <!-- Exponential => param μ => λ=1/μ -->
+            <div id="arrivalExpParams" class="hidden">
+              <label>Arrival Mean (μ):</label>
+              <input
+                type="number"
+                step="0.01"
+                min="0.01"
+                name="arrival_exp_mu"
+                value="1.0"
+              />
+            </div>
+          </fieldset>
+
+          <!-- SERVICE -->
+          <fieldset>
+            <legend>Service Distribution</legend>
+            <label>Distribution:</label>
+            <select name="service_type" id="service_type">
+              <option value="exponential">Exponential</option>
+              <option value="normal">Normal</option>
+              <option value="uniform">Uniform</option>
+              <option value="poisson">Poisson</option>
+            </select>
+
+            <div id="serviceExponentialParams" class="hidden">
+              <label>Service Mean (μ):</label>
+              <input
+                type="number"
+                step="0.01"
+                min="0.01"
+                name="service_rate"
+                value="1.0"
+              />
+            </div>
+            <div id="serviceNormalParams" class="hidden">
+              <label>Service Mean (μ):</label>
+              <input
+                type="number"
+                step="0.01"
+                min="0.01"
+                name="service_mu"
+                value="3.0"
+              />
+              <label>Service Std Dev (σ):</label>
+              <input
+                type="number"
+                step="0.01"
+                min="0.01"
+                name="service_sigma"
+                value="1.0"
+              />
+            </div>
+            <div id="serviceUniformParams" class="hidden">
+              <label>Service Lower Bound (a):</label>
+              <input
+                type="number"
+                step="0.01"
+                min="0.01"
+                name="service_a"
+                value="1.0"
+              />
+              <label>Service Upper Bound (b):</label>
+              <input
+                type="number"
+                step="0.01"
+                min="0.01"
+                name="service_b"
+                value="5.0"
+              />
+            </div>
+            <div id="servicePoissonParams" class="hidden">
+              <label>Service Mean (λ):</label>
+              <input
+                type="number"
+                step="0.01"
+                min="0.01"
+                name="service_poisson_lambda"
+                value="2.0"
+              />
+            </div>
+          </fieldset>
+
+          <!-- SERVERS / PRIORITY / RATEWISE -->
+          <fieldset>
+            <legend>General Settings</legend>
+            <label>Number of Servers:</label>
+            <input type="number" name="servers" value="1" min="1" step="1" />
+
+            <br />
+            <label>Enable Priority Scheduling?</label>
+            <select name="enable_priority" id="enable_priority">
+              <option value="no">No</option>
+              <option value="yes">Yes</option>
+            </select>
+
+            <div id="priorityLevels" class="hidden">
+              <label>Priority Levels (1..5):</label>
+              <input
+                type="number"
+                name="priority_count"
+                value="3"
+                min="1"
+                max="5"
+                step="1"
+              />
+            </div>
+
+            <label>Rate-wise?</label>
+            <select name="rate_wise" id="rate_wise">
+              <option value="no">No</option>
+              <option value="yes">Yes</option>
+            </select>
+            <div id="timeUnits" class="hidden">
+              <label>Arrival Time Unit (hour/minute/second):</label>
+              <input type="text" name="arrival_time_unit" value="minute" />
+              <br />
+              <label>Service Time Unit (hour/minute/second):</label>
+              <input type="text" name="service_time_unit" value="minute" />
+            </div>
+          </fieldset>
+        </fieldset>
+
+        <!-- QUEUEING MODEL -->
+        <fieldset id="queueingParams" class="hidden">
+          <legend>Queueing Model</legend>
+
+          <!-- ARRIVAL -->
+          <label>Arrival Dist:</label>
+          <select name="q_arrival_type" id="q_arrival_type">
+            <option value="poisson">Poisson</option>
+            <option value="normal">Normal</option>
+            <option value="uniform">Uniform</option>
+            <option value="exponential">Exponential</option>
+          </select>
+
+          <!-- Normal (μ,σ) -->
+          <div id="qArrivalNormalParams" class="hidden">
+            <label>Arrival Mean (μa):</label>
+            <input
+              type="number"
+              step="0.01"
+              min="0.01"
+              name="q_arrival_normal_mu"
+              value="5.0"
+            />
+            <label>Arrival Std Dev (σa):</label>
+            <input
+              type="number"
+              step="0.01"
+              min="0.01"
+              name="q_arrival_normal_sigma"
+              value="1.0"
+            />
+          </div>
+          <!-- Uniform (a,b) -->
+          <div id="qArrivalUniformParams" class="hidden">
+            <label>Arrival Lower Bound (a):</label>
+            <input
+              type="number"
+              step="0.01"
+              min="0.01"
+              name="q_arrival_uniform_a"
+              value="1.0"
+            />
+            <label>Arrival Upper Bound (b):</label>
+            <input
+              type="number"
+              step="0.01"
+              min="0.01"
+              name="q_arrival_uniform_b"
+              value="5.0"
+            />
+          </div>
+          <!-- Exponential => param μ => λ=1/μ -->
+          <div id="qArrivalExpParams" class="hidden">
+            <label>Arrival Mean (μ):</label>
+            <input
+              type="number"
+              step="0.01"
+              min="0.01"
+              name="q_arrival_exp_mu"
+              value="1.0"
+            />
+          </div>
+          <!-- Poisson => param λ -->
+          <div id="qArrivalPoissonParams" class="hidden">
+            <label>Arrival Mean (λ):</label>
+            <input
+              type="number"
+              step="0.01"
+              min="0.01"
+              name="q_arrival_poisson_lambda"
+              value="1.0"
+            />
+          </div>
+
+          <!-- SERVICE -->
+          <label>Service Dist:</label>
+          <select name="q_service_type" id="q_service_type">
+            <option value="exponential">Exponential</option>
+            <option value="normal">Normal</option>
+            <option value="uniform">Uniform</option>
+            <option value="poisson">Poisson</option>
+          </select>
+
+          <div id="qServiceNormalParams" class="hidden">
+            <label>Service Mean (μs):</label>
+            <input
+              type="number"
+              step="0.01"
+              min="0.01"
+              name="q_service_normal_mu"
+              value="3.0"
+            />
+            <label>Service Std Dev (σs):</label>
+            <input
+              type="number"
+              step="0.01"
+              min="0.01"
+              name="q_service_normal_sigma"
+              value="1.0"
+            />
+          </div>
+          <div id="qServiceUniformParams" class="hidden">
+            <label>Service Lower Bound (a):</label>
+            <input
+              type="number"
+              step="0.01"
+              min="0.01"
+              name="q_service_uniform_a"
+              value="1.0"
+            />
+            <label>Service Upper Bound (b):</label>
+            <input
+              type="number"
+              step="0.01"
+              min="0.01"
+              name="q_service_uniform_b"
+              value="5.0"
+            />
+          </div>
+          <div id="qServiceExpParams" class="hidden">
+            <label>Service Mean (μ):</label>
+            <input
+              type="number"
+              step="0.01"
+              min="0.01"
+              name="q_service_exp_mu"
+              value="2.0"
+            />
+          </div>
+          <div id="qServicePoissonParams" class="hidden">
+            <label>Service Mean (λ):</label>
+            <input
+              type="number"
+              step="0.01"
+              min="0.01"
+              name="q_service_poisson_lambda"
+              value="2.0"
+            />
+          </div>
+
+          <label>Number of Servers (c):</label>
+          <input type="number" name="q_servers" value="2" min="1" step="1" />
+        </fieldset>
+
+        <button type="submit">Run</button>
+        <div class="loader-container">
+          <div class="loader" id="loader"></div>
+        </div>
+      </form>
+
+      <!-- SIMULATION RESULTS -->
+      <div id="resultsContainer" class="hidden">
+        <h2>Simulation Results</h2>
+        <pre id="resultsOutput"></pre>
+      </div>
+
+      <div id="ganttContainer" class="hidden">
+        <h2>Gantt Charts</h2>
+        <div id="ganttImagesWrapper"></div>
+      </div>
+
+      <div id="barChartsContainer" class="hidden">
+        <h2>Bar Charts</h2>
+        <img id="barChartsImage" src alt="Bar Charts" />
+      </div>
+
+      <!-- QUEUEING RESULTS -->
+      <div id="queueingContainer" class="hidden">
+        <h2>Queueing Model Results</h2>
+        <pre id="queueingOutput"></pre>
+      </div>
+    </div>
+
+    <script>
+      // Toggle between Simulation & Queueing
+      const modeSelect = document.getElementById("modeSelect");
+      const simulateParams = document.getElementById("simulateParams");
+      const queueingParams = document.getElementById("queueingParams");
+      function updateMode() {
+        if (modeSelect.value === "simulate") {
+          simulateParams.classList.remove("hidden");
+          queueingParams.classList.add("hidden");
+        } else {
+          simulateParams.classList.add("hidden");
+          queueingParams.classList.remove("hidden");
+        }
+      }
+      modeSelect.addEventListener("change", updateMode);
+      updateMode();
+
+      // SIM ARRIVAL toggling
+      const arrivalSelect = document.getElementById("arrival_type");
+      const arrivalPoissonParams = document.getElementById("arrivalPoissonParams");
+      const arrivalNormalParams = document.getElementById("arrivalNormalParams");
+      const arrivalUniformParams = document.getElementById("arrivalUniformParams");
+      const arrivalExpParams = document.getElementById("arrivalExpParams");
+
+      function updateArrivalSim() {
+        arrivalPoissonParams.classList.add("hidden");
+        arrivalNormalParams.classList.add("hidden");
+        arrivalUniformParams.classList.add("hidden");
+        arrivalExpParams.classList.add("hidden");
+
+        if (arrivalSelect.value === "poisson") {
+          arrivalPoissonParams.classList.remove("hidden");
+        } else if (arrivalSelect.value === "normal") {
+          arrivalNormalParams.classList.remove("hidden");
+        } else if (arrivalSelect.value === "uniform") {
+          arrivalUniformParams.classList.remove("hidden");
+        } else if (arrivalSelect.value === "exponential") {
+          arrivalExpParams.classList.remove("hidden");
+        }
+      }
+      arrivalSelect.addEventListener("change", updateArrivalSim);
+      updateArrivalSim();
+
+      // SIM SERVICE toggling
+      const serviceSelect = document.getElementById("service_type");
+      const serviceExponentialParams = document.getElementById("serviceExponentialParams");
+      const serviceNormalParams = document.getElementById("serviceNormalParams");
+      const serviceUniformParams = document.getElementById("serviceUniformParams");
+      const servicePoissonParams = document.getElementById("servicePoissonParams");
+
+      function updateServiceSim() {
+        serviceExponentialParams.classList.add("hidden");
+        serviceNormalParams.classList.add("hidden");
+        serviceUniformParams.classList.add("hidden");
+        servicePoissonParams.classList.add("hidden");
+
+        if (serviceSelect.value === "exponential") {
+          serviceExponentialParams.classList.remove("hidden");
+        } else if (serviceSelect.value === "normal") {
+          serviceNormalParams.classList.remove("hidden");
+        } else if (serviceSelect.value === "uniform") {
+          serviceUniformParams.classList.remove("hidden");
+        } else if (serviceSelect.value === "poisson") {
+          servicePoissonParams.classList.remove("hidden");
+        }
+      }
+      serviceSelect.addEventListener("change", updateServiceSim);
+      updateServiceSim();
+
+      // Priority
+      const enablePriority = document.getElementById("enable_priority");
+      const priorityLevels = document.getElementById("priorityLevels");
+      enablePriority.addEventListener("change", () => {
+        if (enablePriority.value === "yes") {
+          priorityLevels.classList.remove("hidden");
+        } else {
+          priorityLevels.classList.add("hidden");
+        }
+      });
+
+      // RateWise
+      const rateWiseSelect = document.getElementById("rate_wise");
+      const timeUnits = document.getElementById("timeUnits");
+      rateWiseSelect.addEventListener("change", () => {
+        if (rateWiseSelect.value === "yes") {
+          timeUnits.classList.remove("hidden");
+        } else {
+          timeUnits.classList.add("hidden");
+        }
+      });
+
+      // QUEUEING ARRIVAL toggling
+      const qArrivalSelect = document.getElementById("q_arrival_type");
+      const qArrivalNormalParams = document.getElementById("qArrivalNormalParams");
+      const qArrivalUniformParams = document.getElementById("qArrivalUniformParams");
+      const qArrivalExpParams = document.getElementById("qArrivalExpParams");
+      const qArrivalPoissonParams = document.getElementById("qArrivalPoissonParams");
+
+      function updateQArrival() {
+        qArrivalNormalParams.classList.add("hidden");
+        qArrivalUniformParams.classList.add("hidden");
+        qArrivalExpParams.classList.add("hidden");
+        qArrivalPoissonParams.classList.add("hidden");
+
+        if (qArrivalSelect.value === "normal") {
+          qArrivalNormalParams.classList.remove("hidden");
+        } else if (qArrivalSelect.value === "uniform") {
+          qArrivalUniformParams.classList.remove("hidden");
+        } else if (qArrivalSelect.value === "exponential") {
+          qArrivalExpParams.classList.remove("hidden");
+        } else if (qArrivalSelect.value === "poisson") {
+          qArrivalPoissonParams.classList.remove("hidden");
+        }
+      }
+      qArrivalSelect.addEventListener("change", updateQArrival);
+      updateQArrival();
+
+      // QUEUEING SERVICE toggling
+      const qServiceSelect = document.getElementById("q_service_type");
+      const qServiceNormalParams = document.getElementById("qServiceNormalParams");
+      const qServiceUniformParams = document.getElementById("qServiceUniformParams");
+      const qServiceExpParams = document.getElementById("qServiceExpParams");
+      const qServicePoissonParams = document.getElementById("qServicePoissonParams");
+
+      function updateQService() {
+        qServiceNormalParams.classList.add("hidden");
+        qServiceUniformParams.classList.add("hidden");
+        qServiceExpParams.classList.add("hidden");
+        qServicePoissonParams.classList.add("hidden");
+
+        if (qServiceSelect.value === "normal") {
+          qServiceNormalParams.classList.remove("hidden");
+        } else if (qServiceSelect.value === "uniform") {
+          qServiceUniformParams.classList.remove("hidden");
+        } else if (qServiceSelect.value === "exponential") {
+          qServiceExpParams.classList.remove("hidden");
+        } else if (qServiceSelect.value === "poisson") {
+          qServicePoissonParams.classList.remove("hidden");
+        }
+      }
+      qServiceSelect.addEventListener("change", updateQService);
+      updateQService();
+
+      // SUBMIT
+      const mainForm = document.getElementById("mainForm");
+      const loader = document.getElementById("loader");
+      const resultsContainer = document.getElementById("resultsContainer");
+      const resultsOutput = document.getElementById("resultsOutput");
+      const ganttContainer = document.getElementById("ganttContainer");
+      const ganttImagesWrapper = document.getElementById("ganttImagesWrapper");
+      const barChartsContainer = document.getElementById("barChartsContainer");
+      const barChartsImage = document.getElementById("barChartsImage");
+      const queueingContainer = document.getElementById("queueingContainer");
+      const queueingOutput = document.getElementById("queueingOutput");
+
+      mainForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        loader.style.display = "block";
+
+        resultsContainer.classList.add("hidden");
+        ganttContainer.classList.add("hidden");
+        barChartsContainer.classList.add("hidden");
+        queueingContainer.classList.add("hidden");
+
+        resultsOutput.textContent = "";
+        ganttImagesWrapper.innerHTML = "";
+        barChartsImage.src = "";
+        queueingOutput.textContent = "";
+
+        const formData = new FormData(mainForm);
+        try {
+          const resp = await fetch("/run_operation", {
+            method: "POST",
+            body: formData,
+          });
+          if (!resp.ok) throw new Error("Server error: " + resp.statusText);
+          const data = await resp.json();
+          loader.style.display = "none";
+
+          if (data.error) {
+            alert("Error: " + data.error);
+            return;
+          }
+
+          if (data.mode === "simulate") {
+            // Simulation results
+            resultsContainer.classList.remove("hidden");
+            resultsOutput.textContent = data.simulation_text || "No results";
+
+            if (data.gantt_images && data.gantt_images.length > 0) {
+              ganttContainer.classList.remove("hidden");
+              data.gantt_images.forEach((b64, idx) => {
+                const img = document.createElement("img");
+                img.src = "data:image/png;base64," + b64;
+                img.alt = `Gantt ${idx + 1}`;
+                img.style.display = "block";
+                img.style.marginBottom = "20px";
+                ganttImagesWrapper.appendChild(img);
+              });
+            }
+            if (data.bar_charts) {
+              barChartsContainer.classList.remove("hidden");
+              barChartsImage.src = "data:image/png;base64," + data.bar_charts;
+            }
+          } else if (data.mode === "queueing") {
+            // Queueing results
+            queueingContainer.classList.remove("hidden");
+            queueingOutput.textContent = data.queueing_text || "No queueing output.";
+          }
+        } catch (err) {
+          loader.style.display = "none";
+          alert("Error: " + err);
+        }
+      });
+    </script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    ></script>
+  </body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles-about.css') }}">
+    <title>About Us</title>
+</head>
+<body>
+    {% include 'header.html' %}
+    <div class="heading">
+        <h1>Meet Our Team: </h1>
+    </div>
+    <div class="img-container">
+        <div class="image first">
+            <img src="{{ url_for('static', filename='images/bilal.jpeg') }}" alt="Muhammad Bilal">
+            <h5>Muhammad Bilal (B21110006069) - <strong>Front-End Developer</strong></h5>
+        </div>
+        <div class="image">
+            <img src="{{ url_for('static', filename='images/wahaj.jpeg') }}" alt="Muhammad Wahaj">
+            <h5>Muhammad Wahaj ul Haq (B21110006093) - <strong>Front-End Developer</strong></h5>
+        </div>
+        <div class="image">
+            <img src="{{ url_for('static', filename='images/mustafa.jpeg') }}" alt="Muhammad Mustafa">
+            <h5>Muhammad Mustafa (B21110006083) - <strong>Front-End Developer</strong></h5>
+        </div>
+        <div class="image">
+            <img src="{{ url_for('static', filename='images/waqas.jpeg') }}" alt="Muhammad Waqas">
+            <h5>Muhammad Waqas Ansari (B21110006095) - <strong>Back-End Developer</strong> </h5>
+        </div>
+        <div class="image">
+            <img src="{{ url_for('static', filename='images/hamza.jpeg') }}" alt="Hamza Abd e Ali">
+            <h5>Hamza Abd e Ali (B21110006036) - <strong>Back-End Developer</strong></h5>
+        </div>
+    </div>
+    
+</body>
+</html>

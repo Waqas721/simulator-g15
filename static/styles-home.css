@@ -1,0 +1,14 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+.nav-item{
+    margin-left: 1rem;
+}
+
+.nav-item:hover{
+    background-color: #14c61a;
+    border-radius: 0.5rem;
+}
+
