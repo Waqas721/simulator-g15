@@ -214,4 +214,4 @@ def run_queueing(form):
     return queueing_code.run_queueing_model(form)
 
 if __name__=='__main__':
-    app.run(debug=True)
+    app.run(debug=False, host='0.0.0.0', port=5000)
